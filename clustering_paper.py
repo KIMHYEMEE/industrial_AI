@@ -38,7 +38,7 @@ df_clustering = df[df_col]
 # clustering_idx = df_clustering.index.tolist()
 #df_clustering = df_clustering.fillna(df.mean())
 
-# (2) Fill regression
+# (2) Drop null
 
 clustering_idx = df_clustering.dropna(axis=0).index.tolist()
 df_clustering = df_clustering.iloc[clustering_idx,:]
@@ -97,7 +97,7 @@ def determine_outlier(rlt): # top 1% outlier score
 
 # 6. Training each model and save detection result
 
-model_list = ['KNN','ABOD','LOF','CBLOF','LODA','IF', 'OCSVM']
+model_list = ['KNN','ABOD','LOF','CBLOF','LODA','IF']
 
 rlt_df = pd.DataFrame({'TIME_STAMP': df['TIME_STAMP'][clustering_idx],
                        'Result':[np.nan for _ in range(np.shape(df_clustering.iloc[:,1:])[0])]})
