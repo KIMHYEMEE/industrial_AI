@@ -10,7 +10,7 @@ import pandas as pd
 import numpy as np
 
 
-missing_cond = 'drop' # {mean, drop}
+missing_cond = 'mean' # {mean, drop}
 
 # 1. Load data
 
@@ -51,7 +51,7 @@ elif missing_cond == 'drop':
     df_clustering = df_clustering.iloc[clustering_idx,:]
 
 # 4. Modeling function
-def modeling(model_name):
+def modeling(model_name, n_features):
     if model_name == 'KNN':
         from pyod.models.knn import KNN as pyod_model
         model = pyod_model()
@@ -81,7 +81,8 @@ def modeling(model_name):
         
     elif model_name == 'auto_encoder': # torch ..? 현재 실행 안됨
         from pyod.models.auto_encoder import AutoEncoder as pyod_model
-        model = pyod_model()
+        model = pyod_model(epochs=30, contamination=0.1,hidden_neurons=[n_features])
+
 
     return model
 
@@ -103,13 +104,16 @@ def determine_outlier(rlt): # top 1% outlier score
 
 # 6. Training each model and save detection result
 
-model_list = ['ABOD','LOF','CBLOF','LODA','IF']
+model_list = ['ABOD','LOF','CBLOF','LODA','IF','auto_encoder','OCSVM']
 
 rlt_df = pd.DataFrame({'TIME_STAMP': df['TIME_STAMP'][clustering_idx],
                        'Result':[np.nan for _ in range(np.shape(df_clustering.iloc[:,1:])[0])]})
 
+
+n_features = len(df_clustering.iloc[:,1:].to_numpy()[0])
+
 for model_name in model_list:
-    model = modeling(model_name)
+    model = modeling(model_name,n_features)
     model.fit(df_clustering.iloc[:,1:])
     
     rlt = model.decision_scores_
@@ -119,7 +123,7 @@ for model_name in model_list:
 # 7. Calculate final result
 
 tmp = [0 for _ in range(np.shape(rlt_df)[0])]
-idx = np.where(rlt_df.iloc[:,1:].sum(axis=1) >= 3)[0]
+idx = np.where(rlt_df.iloc[:,1:].sum(axis=1) >= 4)[0]
 
 for i in idx:
     tmp[i] = 1
