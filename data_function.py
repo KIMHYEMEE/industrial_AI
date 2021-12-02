@@ -61,4 +61,4 @@ def load_preprocessing(data_dir, file_name, del_depth, missing_cond):
         clustering_idx = df_clustering.index.tolist()
         df_clustering = df_clustering.interpolate()
         
-    return df_clustering
+    return df_clustering, clustering_idx, df
