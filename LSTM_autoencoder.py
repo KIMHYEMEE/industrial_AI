@@ -35,7 +35,7 @@ from LSTM_autoencoder_modeling import *
 from outlier_detection import *
 
 for del_depth in ['non_depth', 'depth']:
-    for missing_cond in ['mean', 'interpolate']: # when you drop the data, it is impossible to consider the time series characteristics
+    for missing_cond in ['interpolate']:#['mean', 'interpolate']: # when you drop the data, it is impossible to consider the time series characteristics
 
         df, clustering_idx, df_origin = load_preprocessing(data_dir, file_name, del_depth, missing_cond)
         df_clustering = df.copy()
