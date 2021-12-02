@@ -12,33 +12,23 @@ import os
 import pandas as pd
 import numpy as np
 
+
 # 1. Load data
 
+fn_dir = 'C:/GIT/industrial_AI'
 data_dir = 'C:/BaseData/Class/2021-2/Industrial AI/Progress'
-
-os.chdir(data_dir)
-
-df = pd.read_csv('data_10min.csv')
-
-df_des = df.describe()
-
-df_col = df.columns[np.where(df_des.loc['count'] >= 50000)]
-
-# 3. Select columns to train
-df_clustering = df[df_col]
+save_dir = 'C:/BaseData/Class/2021-2/Industrial AI/Progress'
+file_name = 'data_10min.csv'
+del_depth = 'non_depth'
+missing_cond = 'interpolate'
 
 
-# missing data processing
+os.chdir(fn_dir)
 
-# (1) Fill average
+from data_function import *
 
-# clustering_idx = df_clustering.index.tolist()
-#df_clustering = df_clustering.fillna(df.mean())
 
-# (2) Fill regression
-
-clustering_idx = df_clustering.dropna(axis=0).index.tolist()
-df_clustering = df_clustering.iloc[clustering_idx,:]
+df_clustering = load_preprocessing(data_dir, file_name, del_depth, missing_cond)
 
 # 4. Data scaling
 from sklearn.preprocessing import MinMaxScaler
@@ -48,7 +38,7 @@ df_clustering.iloc[:,1:] = scaler.fit_transform(df_clustering.iloc[:,1:])
 
 
 # 5. Data formating for training
-ts = 12
+ts = 6
 n_feature = np.shape(df_clustering.iloc[:,1:])[1]
 n_row = np.shape(df_clustering)[0]-ts+1
 
@@ -85,7 +75,7 @@ epochs = 100
 encoder_decoder = Sequential()
 encoder_decoder.add(L.LSTM(ts, activation='relu', input_shape = (ts, n_feature), return_sequences=True))
 encoder_decoder.add(L.LSTM(int(ts/2), activation='relu', return_sequences=True))
-encoder_decoder.add(L.LSTM(int(ts/2), activation='relu'))
+encoder_decoder.add(L.LSTM(int(ts/2), activation='sigmoid'))
 encoder_decoder.add(L.RepeatVector(ts))
 encoder_decoder.add(L.LSTM(int(ts/2), activation='relu', return_sequences=True))
 encoder_decoder.add(L.LSTM(int(ts/2), activation='relu', return_sequences=True))
@@ -113,6 +103,9 @@ pred.columns = [f'feature{i+1}' for i in range(len(pred.columns))]
 for  c in pred.columns:
     df_pred[c] = pred[c]
 
+df_clustering['']
+
 # 8. Save results
-    
+
+os.chdir(save_dir)
 df_pred.to_csv('lstm_autoencoder_result.csv',index = False)

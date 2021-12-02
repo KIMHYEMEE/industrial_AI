@@ -13,60 +13,21 @@ import matplotlib.pyplot as plt
 
 #missing_cond = 'interpolate' # {mean, drop, interpolate}
 
+fn_dir = 'C:/GIT/industrial_AI'
+data_dir = 'C:/BaseData/Class/2021-2/Industrial AI/Progress'
+file_name = 'data_10min.csv'
+
+os.chdir(fn_dir)
+
+from data_function import *
+
+
 
 
 for del_depth in ['non_depth', 'depth']:
     for missing_cond in ['mean', 'drop', 'interpolate']:
-        # 1. Load data
         
-        data_dir = 'C:/BaseData/Class/2021-2/Industrial AI/Progress'
-        
-        os.chdir(data_dir)
-        
-        df = pd.read_csv('data_10min.csv')
-        #df.TIME_STAMP = pd.to_datetime(df.TIME_STAMP , format='%Y-%m-%d %H:%M:%S')
-        
-        df_des = df.describe()
-        
-        df_col = df.columns[np.where(df_des.loc['count'] >= 50000)]
-        
-        # 2. RPM Condition
-        
-        rpm = 'ME1_RPM_ECC'
-        df_working = df[(df[rpm] >= 80) & (df[rpm] <=120)] 
-        
-        
-        # 3. Select columns to train
-        df_clustering = df_working[df_col]
-        df_clustering.index = range(np.shape(df_clustering)[0]) 
-        
-        # df_clustering = df[df_col]
-        
-        df_clustering.loc[df_clustering.SPEED_LG>100,'SPEED_LG'] = np.nan
-        df_clustering.loc[df_clustering.SPEED_TG>100,'SPEED_TG'] = np.nan
-        
-        
-        if del_depth == 'non_depth':
-            del df_clustering['WATER_DEPTH']
-        
-        
-        # missing data processing
-        
-        if missing_cond == 'mean':
-        
-            # (1) Fill average
-            clustering_idx = df_clustering.index.tolist()
-            df_clustering = df_clustering.fillna(df.mean())
-        
-        elif missing_cond == 'drop': 
-            # (2) Drop null
-            clustering_idx = df_clustering.dropna(axis=0).index.tolist()
-            df_clustering = df_clustering.iloc[clustering_idx,:]
-            
-        elif missing_cond == 'interpolate':
-            
-            clustering_idx = df_clustering.index.tolist()
-            df_clustering = df_clustering.interpolate()
+        df_clustering = load_preprocessing(data_dir, file_name, del_depth, missing_cond)
         
         # 4. Modeling function
         def modeling(model_name, n_features):
