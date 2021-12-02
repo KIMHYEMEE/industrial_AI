@@ -95,7 +95,7 @@ for del_depth in ['non_depth', 'depth']:
         # 8. Save compression results
         
         os.chdir(save_dir)
-        df_pred.to_csv('lstm_autoencoder_result.csv',index = False)
+        df_pred.to_csv(f'./1125/rlt/lstm_autoencoder_result_{del_depth}_{missing_cond}.csv',index = False)
         
         
         # 9. Training each model and save detection result
@@ -130,7 +130,7 @@ for del_depth in ['non_depth', 'depth']:
         
         # 11. Svae the result
         
-        rlt_df.to_csv(f'clustering_LSTM-{del_depth}-{missing_cond}.csv',index = False)
+        rlt_df.to_csv(f'./1125/rlt/clustering_LSTM-{del_depth}-{missing_cond}.csv',index = False)
         
         # 12. Result join
         
