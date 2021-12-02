@@ -148,7 +148,7 @@ for del_depth in ['non_depth', 'depth']:
         
         rlt_df['Result'] =  tmp
         
-        rlt_df.to_csv(f'clustering_results_paper-{missing_cond}.csv',index = False)
+        rlt_df.to_csv(f'clustering_results_paper-{del_depth}-{missing_cond}.csv',index = False)
         
         # 8. Svae the result
         
