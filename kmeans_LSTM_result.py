@@ -58,7 +58,9 @@ for del_depth in ['non_depth', 'depth']:
         
         
         for i in range(np.shape(df_result_outlier)[0]):
-            tmp = np.array(df_clustering.loc[np.where(df_clustering['TIME_STAMP'].isin([df_result_outlier.loc[i][ts]]))[0]][df_clustering.columns[1:]])
+            tmp = np.array(df_clustering.loc[np.where(df_clustering['TIME_STAMP'].isin([df_result_outlier.loc[i][ts]]))[0]])
+
+            #tmp = np.array(df_clustering.loc[np.where(df_clustering['TIME_STAMP'].isin([df_result_outlier.loc[i][ts]]))[0]][df_clustering.columns[1:]])
             #tmp = np.array(df_clustering.loc[np.where(df_clustering['TIME_STAMP'].isin(df_result_outlier.loc[i][1:(ts+1)]))[0]][df_clustering.columns[1:]])
             #tmp = np.array([tmp.flatten()])
             try:
@@ -66,9 +68,15 @@ for del_depth in ['non_depth', 'depth']:
             except:
                 case = tmp
         
+        case = pd.DataFrame(case)
+        case.columns = df_clustering.columns
+        
+        os.chdir(save_dir)
+        case['Result'] = 1
+        case.to_csv(f'case_{del_depth}-{missing_cond}.csv', index = False)
         
         # kmeans
-
+        """
         kmeans_rlt = pd.DataFrame({'TIME_STAMP':df_result_outlier[f'ts{ts-1}']})
         
         for k in range(2,11):
@@ -80,6 +88,6 @@ for del_depth in ['non_depth', 'depth']:
         os.chdir(save_dir)
         kmeans_rlt.to_csv(f'kmeans_rlt-{del_depth}-{missing_cond}.csv', index = False)
         
-
+        """
 
         del case
